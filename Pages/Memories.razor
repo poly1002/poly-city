@@ -1,0 +1,242 @@
+﻿@page "/memories"
+
+<div class="memories-page">
+    <div class="glass-card">
+        <div class="icon-decor">📸</div>
+        <h2>Наши воспоминания</h2>
+        <div class="divider"></div>
+        <p class="subtitle">Листай, чтобы вспомнить самые тёплые моменты</p>
+
+        <!-- КАРУСЕЛЬ -->
+        <div class="carousel-container">
+            <div class="carousel-track" style="transform: translateX(-@(currentIndex * 100)%);">
+                @foreach (var photo in photos)
+                {
+                    <div class="carousel-slide">
+                        <img src="@photo" alt="Воспоминание" />
+                    </div>
+                }
+            </div>
+
+            <!-- КНОПКИ ЛИСТАНИЯ -->
+            <button class="carousel-btn prev" @onclick="PrevSlide">‹</button>
+            <button class="carousel-btn next" @onclick="NextSlide">›</button>
+        </div>
+
+        <!-- ИНДИКАТОРЫ (точки) -->
+        <div class="carousel-dots">
+            @for (int i = 0; i < photos.Count; i++)
+            {
+                <span class="dot @(i == currentIndex ? "active" : "")" @onclick="() => GoToSlide(i)"></span>
+            }
+        </div>
+
+        <a href="/" class="btn-scan">🏠 На главную</a>
+    </div>
+</div>
+
+<style>
+    .memories-page {
+        min-height: 100vh;
+        background: #f8f4ff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        box-sizing: border-box;
+        margin: -20px;
+    }
+
+    .glass-card {
+        background: white;
+        border-radius: 32px;
+        padding: 35px 30px 30px;
+        max-width: 420px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.04);
+        border: 1px solid rgba(0, 0, 0, 0.02);
+        margin-bottom: 24px;
+    }
+
+    .icon-decor {
+        font-size: 36px;
+        margin-bottom: 8px;
+        opacity: 0.6;
+    }
+
+    h2 {
+        color: #2d1b3d;
+        font-size: 26px;
+        font-weight: 600;
+        margin: 0 0 6px 0;
+    }
+
+    .divider {
+        width: 32px;
+        height: 2px;
+        background: #d4c5d9;
+        margin: 12px auto 20px;
+        border-radius: 4px;
+    }
+
+    .subtitle {
+        font-size: 16px;
+        color: #4a4a4a;
+        font-weight: 400;
+        line-height: 1.5;
+        margin-bottom: 20px;
+    }
+
+    .carousel-container {
+        position: relative;
+        width: 100%;
+        max-width: 320px;
+        margin: 0 auto 16px;
+        overflow: hidden;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        aspect-ratio: 1 / 1;
+        background: #f3edf9;
+    }
+
+    .carousel-track {
+        display: flex;
+        transition: transform 0.4s ease;
+        height: 100%;
+        width: 100%;
+    }
+
+    .carousel-slide {
+        flex: 0 0 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .carousel-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 18px;
+    }
+
+    .carousel-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255, 255, 255, 0.8);
+        border: none;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        font-size: 20px;
+        color: #2d1b3d;
+        cursor: pointer;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .carousel-btn:active {
+        transform: translateY(-50%) scale(0.92);
+        background: white;
+    }
+
+    .carousel-btn.prev {
+        left: 8px;
+    }
+
+    .carousel-btn.next {
+        right: 8px;
+    }
+
+    .carousel-dots {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin: 12px 0 20px;
+    }
+
+    .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #d4c5d9;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+        .dot.active {
+            background: #4f46e5;
+            width: 24px;
+            border-radius: 4px;
+        }
+
+    .btn-scan {
+        display: inline-block;
+        padding: 14px 40px;
+        background: #4f46e5;
+        color: white !important;
+        font-size: 17px;
+        font-weight: 500;
+        text-decoration: none;
+        border-radius: 60px;
+        box-shadow: 0 8px 30px rgba(79, 70, 229, 0.4);
+        transition: all 0.2s ease;
+        border: none;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        letter-spacing: 0.3px;
+        margin-top: 4px;
+    }
+
+        .btn-scan:active {
+            transform: scale(0.97);
+            background: #4338ca;
+            box-shadow: 0 4px 20px rgba(79, 70, 229, 0.5);
+        }
+</style>
+
+@code {
+    private int currentIndex = 0;
+
+    private List<string> photos = new List<string>
+    {
+        "images/memories/photo1.jpg",
+        "images/memories/photo2.jpg",
+        "images/memories/photo3.jpg",
+        "images/memories/photo4.jpg",
+        "images/memories/photo5.jpg",
+        "images/memories/photo6.jpg",
+        "images/memories/photo7.jpg"
+    };
+
+    private void NextSlide()
+    {
+        if (currentIndex < photos.Count - 1)
+            currentIndex++;
+        else
+            currentIndex = 0;
+    }
+
+    private void PrevSlide()
+    {
+        if (currentIndex > 0)
+            currentIndex--;
+        else
+            currentIndex = photos.Count - 1;
+    }
+
+    private void GoToSlide(int index)
+    {
+        currentIndex = index;
+    }
+}
